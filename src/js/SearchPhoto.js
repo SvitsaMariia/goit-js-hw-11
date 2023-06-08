@@ -40,7 +40,6 @@ export async function SearchPictures(evt) {
 }
 
   export async function loadMorePhoto(){
-    
     try {
         const result = await photoAPI.searchPhoto();
         const markup = makePhotoList(result.hits)
