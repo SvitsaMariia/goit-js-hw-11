@@ -22,26 +22,22 @@ export async function SearchPictures(evt) {
       Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
       return;
     }
-
-    if (result.hits.length < photoAPI.PerPage) {
-      Notiflix.Notify.warning(
-        "We're sorry, but you've reached the end of search results."
-      );
+  
+    if (result.hits.length < photoAPI.PerPage || photoAPI.TOTAL_PAGES === 0) {
       loadMoreBtn.style.display = 'none';
       return;
-}
-
+    }
     if (photoAPI.TOTAL_PAGES === photoAPI.PAGE - 1){
       return
     }
 
     loadMoreBtn.removeAttribute('style');
+    
 
   } catch {
     Notiflix.Notify.failure(`Sorry, this invalid request`)
   }
 }
-
 
   export async function loadMorePhoto(){
     
@@ -49,9 +45,10 @@ export async function SearchPictures(evt) {
         const result = await photoAPI.searchPhoto();
         const markup = makePhotoList(result.hits)
         listPhoto.insertAdjacentHTML("beforeend", markup)
-        if (photoAPI.TOTAL_PAGES === photoAPI.PAGE - 1){
-          loadMoreBtn.style.display = 'flex';
-          return
+        if (result.hits.length === 0 || photoAPI.TOTAL_PAGES === 0) {
+          loadMoreBtn.style.display = 'none';
+          Notiflix.Notify.warning("We're sorry, but there are no more photos to show.");
+          return;
         }
         if (photoAPI.PAGE >= photoAPI.TOTAL_PAGES) {
           Notiflix.Notify.warning(
@@ -59,11 +56,11 @@ export async function SearchPictures(evt) {
           );
           loadMoreBtn.style.display = 'none';
     }
+
   }
     catch(error){
       console.log(error);
       Notiflix.Notify.failure(`Oops, Something went wrong!`)
     }
-  
-}
-  
+
+  }
